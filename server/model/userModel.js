@@ -1,0 +1,40 @@
+const mongoose = require("mongoose");
+
+const userSchema = new mongoose.Schema(
+  {
+    userName: {
+      type: String,
+      required: [true, "Please provide username"],
+    },
+    userEmail: {
+      type: String,
+      required: [true, "Please provide Email"],
+      unique: true,
+    },
+    userPhoneNumber: {
+      type: Number,
+      required: [true, "Please provide PhoneNumber"],
+    },
+    userPassword: {
+      type: String,
+      required: [true, "Please provide Password"],
+    },
+    userRole: {
+      type: String,
+      enum: ["admin", "customer"],
+      default: "customer",
+    },
+    otp:{
+      type:Number,
+    },
+    isOtpVerified :{
+      type: Boolean,
+      default:false,
+    }
+  },
+  {
+    timestamps: true,
+  }
+);
+const User = mongoose.model("User", userSchema);
+module.exports = User
