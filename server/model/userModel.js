@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const Schema = mongoose.Schema;
 const userSchema = new mongoose.Schema(
   {
     userName: {
@@ -30,7 +30,8 @@ const userSchema = new mongoose.Schema(
     isOtpVerified :{
       type: Boolean,
       default:false,
-    }
+    },
+    cart:[{type: Schema.Types.ObjectID,ref:"Product"}],
   },
   {
     timestamps: true,

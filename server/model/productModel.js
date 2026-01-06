@@ -14,7 +14,7 @@ price:{
     type:Number,
     required:[true,"Price  must be provided"],
 },
-productstatus:{
+productStatus:{
     type:String,
     enum:["available","not available"],
 },
@@ -28,5 +28,5 @@ productImage: String,
     timestamps:true
 },
 );
-const Product = mongoose.model("product",productSchema);
+const Product = mongoose.model("Product",productSchema);
 module.exports = Product;

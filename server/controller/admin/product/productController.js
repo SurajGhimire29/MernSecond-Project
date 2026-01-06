@@ -1,4 +1,5 @@
-const Product = require("../../../model/productModel");
+const Product = require("../../../model/productModel")
+const Review = require("../../../model/reviewModel");
 const catchAsync = require("../../../services/catchAsync");
 const fs = require("fs");
 exports.addProduct = async (req, res) => {
@@ -20,14 +21,14 @@ exports.addProduct = async (req, res) => {
     if (!ProductName || !Description || !Price || !Status || !StockQty) {
       return res.status(400).json({
         message:
-          "Please Provide productName, productDescription, price, productstatus,productStockQty",
+          "Please Provide productName, productDescription, price,Status,productStockQty",
       });
     }
     await Product.create({
       productName: ProductName,
       productDescription: Description,
       price: Price,
-      productstatus: Status,
+      productStatus: Status,
       productStockQty: StockQty,
       productImage: file ? `${process.env.BACKEND_URL}/${filePath}` : filePath,
     });
@@ -66,6 +67,9 @@ exports.getProduct = async (req, res) => {
     });
   }
   const product = await Product.find({ _id: id });
+  const ProductReview = await Review.find({productId: id})
+  .populate("userId")
+  .populate("productId");
   if (product.length == 0) {
     res.status(400).json({
       message: "No product found with that id",
@@ -74,7 +78,8 @@ exports.getProduct = async (req, res) => {
   } else {
     res.status(200).json({
       message: "Product Fetched Successfully",
-      product,
+      data: product,
+      data2: ProductReview,
     });
   }
 };
@@ -128,8 +133,8 @@ exports.editProduct = async (req, res) => {
     });
   }
   const oldProductImage = oldData.productImage; //
-  const lenghtTocut = process.env.BACKEND_URL.length;
-  const finalFilePathAfterCut = oldProductImage.slice(lenghtTocut); //1111111-abcd.png
+  const lengthTocut = process.env.BACKEND_URL.length;
+  const finalFilePathAfterCut = oldProductImage.slice(lengthTocut); //1111111-abcd.png
   if (req.file && req.file.filename) {
     //Remove File from uploads folder
     fs.unlink("./uploads/" + finalFilePathAfterCut, (err) => {
