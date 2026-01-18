@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const { connectDatabase } = require("./database/connectDB");
 
+const  FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173"
 // ROUTES
 const authRoute = require("./routes/authRoutes");
 const productRoute = require("./routes/productRoutes");
@@ -11,18 +12,18 @@ const reviewRoutes = require("./routes/productReviewRoutes");
 const profileRoute = require("./routes/profileRoutes");
 const cartRoute = require("./routes/cartRoutes");
 
+
 // CREATE APP
 const app = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // CONNECT DB
-connectDatabase();
 
 // ✅ CORS MUST COME BEFORE ROUTES
 app.use(
   cors({
     origin: "http://localhost:5173",
-    credentials: true,
+  origin:FRONTEND_URL,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   })
 );
@@ -43,7 +44,20 @@ app.use("/api", profileRoute);
 app.use("/api", cartRoute);
 
 app.use(express.static("uploads"))
-// START SERVER
-app.listen(port, () => {
-  console.log(`✅ Server running on port ${port}`);
+app.get("/healthz", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    message: "Backend is running!",
+  });
 });
+// START SERVER
+connectDatabase()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server has started at PORT ${PORT}`);
+      console.log(`Health check available at /healthz`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect to MongoDB", err);
+  });
